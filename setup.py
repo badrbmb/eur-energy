@@ -34,7 +34,7 @@ setup(
     },
     author="Badr Ben m'barek",
     author_email='badr.benb@gmail.com',
-    description='Explore decomposition of the European energy consumption of specific processes and end-uses',
+    description='Explore the energy consumption of European industrial processes',
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='',
