@@ -1,0 +1,17 @@
+fuel,carbon_content,unit,comment,source,url
+Electricity,37.87878788,kg/GJ,based on default value of 0.5 kgCO2/kWh,country dependent,
+Diesel oil,20.2,kg/GJ,,IEA,https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf
+LPG,17.2,kg/GJ,,IEA,https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf
+Naphtha,20.0,kg/GJ,,IEA,https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf
+Natural gas,15.3,kg/GJ,,IEA,https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf
+Other liquids,20.0,kg/GJ,based on Non-specified oil products,IEA,https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf
+Refinery gas,15.7,kg/GJ,,IEA,https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf
+Residual fuel oil,21.1,kg/GJ,based on Fuel oil,IEA,https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf
+Solids,26.8,kg/GJ,based on Anthracite,IEA,https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf
+Diesel oil (incl. biofuels),20.2,kg/GJ,same as Diesel oil,IEA,https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf
+Natural gas (incl. biogas),15.3,kg/GJ,same as Natural gas,IEA,https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf
+Biomass,0.0,kg/GJ,,,
+Derived gases,50.0,kg/GJ,based on Other recovered gases,IEA,https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf
+Steam distributed,37.87878788,kg/GJ,using default value equal to carbon intensity of electricity,country dependent,
+Solar and geothermal,0.0,kg/GJ,assuming clean,IEA,
+Coke,29.2,kg/GJ,,IEA,https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf
