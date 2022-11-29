@@ -1,11 +1,12 @@
 import logging
 from dataclasses import dataclass
 from types import SimpleNamespace
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
 import pycountry
+
 from eur_energy.model.sectors import SubSector
 
 logging.basicConfig(level=logging.INFO)
@@ -90,7 +91,8 @@ class Country:
             logger.warning(f"No match found for sub-sector=`{sub_sector}`!")
             return None
 
-    def get_total_emission_intensity(self, sub_sector: str, process: Optional[str] = None) -> Optional[float]:
+    def get_total_emission_intensity(self, sub_sector: Optional[str] = None, process: Optional[str] = None) \
+            -> Optional[Union[list, float]]:
         """
         Emission intensity for a given sub-sector
         Args:
@@ -99,16 +101,27 @@ class Country:
         Returns:
             - float: emission intensity expressed in kgCO2/tonne
         """
-        _match = self.get_sub_sector(sub_sector)
-        if _match is not None:
-            if process is not None:
-                _match = _match.get_process(process)
-                if _match is not None:
+        if sub_sector is not None:
+            _match = self.get_sub_sector(sub_sector)
+            if _match is not None:
+                if process is not None:
+                    _match = _match.get_process(process)
+                    if _match is not None:
+                        return _match.total_emission_intensity
+                else:
                     return _match.total_emission_intensity
             else:
-                return _match.total_emission_intensity
+                return None
         else:
-            return None
+            # return all sub-sectors with recursive call
+            return [
+                {
+                    'sub_sector': t,
+                    'value': self.get_total_emission_intensity(sub_sector=t),
+                    'unit': "kgCO2/tonne"  # TODO replace hard-coded by inferred
+                }
+                for t in self.sub_sector_names
+            ]
 
     @property
     def emission_intensity_by_sub_sector(self) -> dict:

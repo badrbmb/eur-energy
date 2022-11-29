@@ -85,19 +85,47 @@ def filter_df():
     return df_out
 
 
+def generate_multiplier_prefixes(unit):
+    """
+    Generates suffixes for displaying pretty number using millify
+    Args:
+        unit:
+    Returns:
+
+    """
+    if unit == 'GJ':
+        multiplier = 1e9
+        prefixes = [' kJ', ' MJ', ' GJ', ' TJ', ' PJ']
+    elif unit == 'GJ/tonne':
+        multiplier = 1e9
+        prefixes = [' kJ/tonne', ' MJ/tonne', ' GJ/tonne', ' TJ/tonne', ' PJ/tonne']
+    elif unit == 'tonne':
+        multiplier = 1
+        prefixes = [' kt', ' mt']
+    elif unit == 'kgCO2':
+        multiplier = 1
+        prefixes = [' tCO2', ' ktCO2', ' mtCO2']
+    elif unit == 'kgCO2/tonne':
+        multiplier = 1
+        prefixes = [' tCO2/tonne', ' ktCO2/tonne', ' mtCO2/tonne']
+    else:
+        raise NotImplementedError(f"unit={unit} not handled")
+
+    return multiplier, prefixes
+
+
 def generate_text_map(df_in, variable_to_show):
     # get the highest value description
     df_text = df_in[df_in['variable'] == variable_to_show].copy()
     _max_value = df_text[df_text['iso2'] != 'EU28']['value'].max()
     info_dict = df_text[df_text['value'] == _max_value].iloc[0].to_dict()
-    # store unit
-    _unit = info_dict['unit']
     _variable = info_dict['variable'].lower().replace('co2', 'CO2')
     _process = info_dict['process']
-    _value = millify(round(info_dict['value']), precision=1)
+    _multiplier, _prefixes = generate_multiplier_prefixes(info_dict['unit'])
+    _value = millify(round(info_dict['value'] * _multiplier), precision=1, prefixes=_prefixes)
     info_text1 = f"""
     **{info_dict['country']}** had the **highest {_variable}** from "{_process}",
-    peaking at **{_value} {_unit}** in **{info_dict['year']}**.
+    peaking at **{_value}** in **{info_dict['year']}**.
     """
 
     # get evolution of across all EU27 + UK countries

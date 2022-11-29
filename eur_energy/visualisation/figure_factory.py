@@ -5,6 +5,40 @@ from plotly import express as px, graph_objects as go
 
 from eur_energy.model.countries import Country
 
+# colors by country
+COLOR_DICT_ISO2 = {
+    'AT': '#2E91E5',
+    'BE': '#E15F99',
+    'BG': '#1CA71C',
+    'CY': '#FB0D0D',
+    'CZ': '#DA16FF',
+    'DE': '#222A2A',
+    'DK': '#B68100',
+    'EE': '#750D86',
+    'EL': '#EB663B',
+    'ES': '#511CFB',
+    'EU28': '#00A08B',
+    'EU27+UK': '#00A08B',
+    'FI': '#FB00D1',
+    'FR': '#FC0080',
+    'HR': '#B2828D',
+    'HU': '#6C7C32',
+    'IE': '#778AAE',
+    'IT': '#862A16',
+    'LT': '#A777F1',
+    'LU': '#620042',
+    'LV': '#1616A7',
+    'MT': '#DA60CA',
+    'NL': '#6C4516',
+    'PL': '#0D2A63',
+    'PT': '#AF0038',
+    'RO': '#2E91E5',
+    'SE': '#E15F99',
+    'SI': '#1CA71C',
+    'SK': '#FB0D0D',
+    'UK': '#DA16FF'
+}
+
 
 def generate_heatmap(df_map, variable_to_show, country_borders, process):
     df_show_map = df_map[
@@ -118,7 +152,7 @@ def generate_cumulative_chart(df_data, reference_year, variable_to_show, colors_
             arrowsize=1.5,
             align='left',
             bgcolor="#e1e4e1",
-            opacity=0.8,
+            opacity=0.9,
             font=dict(color="#2e2f31"),
             arrowcolor="#9b9b9b",
         )
@@ -138,7 +172,7 @@ def generate_cumulative_chart(df_data, reference_year, variable_to_show, colors_
             arrowsize=1.5,
             align='left',
             bgcolor="#e1e4e1",
-            opacity=0.8,
+            opacity=0.9,
             font=dict(color="#2e2f31"),
             arrowcolor="#9b9b9b",
         )
@@ -146,36 +180,9 @@ def generate_cumulative_chart(df_data, reference_year, variable_to_show, colors_
     return fig
 
 
-# colors by country
-COLOR_DICT_ISO2 = {
-    'AT': '#2E91E5',
-    'BE': '#E15F99',
-    'BG': '#1CA71C',
-    'CY': '#FB0D0D',
-    'CZ': '#DA16FF',
-    'DE': '#222A2A',
-    'DK': '#B68100',
-    'EE': '#750D86',
-    'EL': '#EB663B',
-    'ES': '#511CFB',
-    'EU28': '#00A08B',
-    'EU27+UK': '#00A08B',
-    'FI': '#FB00D1',
-    'FR': '#FC0080',
-    'HR': '#B2828D',
-    'HU': '#6C7C32',
-    'IE': '#778AAE',
-    'IT': '#862A16',
-    'LT': '#A777F1',
-    'LU': '#620042',
-    'LV': '#1616A7',
-    'MT': '#DA60CA',
-    'NL': '#6C4516',
-    'PL': '#0D2A63',
-    'PT': '#AF0038',
-    'RO': '#2E91E5',
-    'SE': '#E15F99',
-    'SI': '#1CA71C',
-    'SK': '#FB0D0D',
-    'UK': '#DA16FF'
-}
+def generate_country_fuel_demand(df_fuel_demand):
+    fig = px.pie(df_fuel_demand, names='fuel', values='value', hover_data=['unit'])
+    fig.update_layout(
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+    )
+    return fig
