@@ -91,6 +91,38 @@ class Country:
             logger.warning(f"No match found for sub-sector=`{sub_sector}`!")
             return None
 
+    def get_total_emissions(self, sub_sector: Optional[str] = None, process: Optional[str] = None) \
+            -> Optional[Union[list, float]]:
+        """
+        Emissions for a given sub-sector
+        Args:
+            sub_sector (str):
+            process (str): optional, if None, returns all sub-sector emission intensities
+        Returns:
+            - float: emission intensity expressed in kgCO2/tonne
+        """
+        if sub_sector is not None:
+            _match = self.get_sub_sector(sub_sector)
+            if _match is not None:
+                if process is not None:
+                    _match = _match.get_process(process)
+                    if _match is not None:
+                        return _match.total_emissions
+                else:
+                    return _match.total_emissions
+            else:
+                return None
+        else:
+            # return all sub-sectors with recursive call
+            return [
+                {
+                    'sub_sector': t,
+                    'value': self.get_total_emissions(sub_sector=t),
+                    'unit': "kgCO2"  # TODO replace hard-coded by inferred
+                }
+                for t in self.sub_sector_names
+            ]
+
     def get_total_emission_intensity(self, sub_sector: Optional[str] = None, process: Optional[str] = None) \
             -> Optional[Union[list, float]]:
         """
@@ -152,10 +184,25 @@ class Country:
         # flatten list
         _out = [u for v in _out for u in v]
 
-        # aggregate by fuel across processes
+        # aggregate by fuel across processes/sub-sectors
         _out = pd.DataFrame(_out).groupby(['fuel', 'unit']).agg({'value': 'sum'}).reset_index()
 
         return _out.to_dict('records')
+
+    def get_total_fuel_demand_all_sub_sectors(self) -> list:
+        """
+        Returns:
+            - list: total fuel demand in GJ for each sub-sector in the country
+        """
+        _out = []
+        for sub in self.sub_sector_names:
+            _tmp = self.get_total_fuel_demand(sub_sector=sub)
+            # aggregate
+            _value = np.nansum([t['value'] for t in _tmp])
+            _unit = _tmp[0]['unit']  # get first unit from list
+            _out.append({'sub_sector': sub, 'value': _value, 'unit': _unit})
+
+        return _out
 
 
 @dataclass

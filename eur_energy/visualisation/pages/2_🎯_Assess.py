@@ -6,7 +6,13 @@ from eur_energy import config
 from eur_energy.model.composer import compose_country
 from eur_energy.model.countries import Country
 from eur_energy.model.processes import VALID_SUBSECTOR_PROCESSES
-from eur_energy.visualisation.figure_factory import COLOR_DICT_ISO2, generate_country_fuel_demand
+from eur_energy.visualisation.figure_factory import (
+    COLOR_DICT_ISO2,
+    generate_country_fuel_demand,
+    generate_country_demand_by_sub_sector,
+    generate_emission_intensities_by_sub_sector,
+    generate_country_emissions_by_sub_sector
+)
 
 st.set_page_config(
     page_title="Assess",
@@ -38,35 +44,54 @@ def get_country_name(iso2_code):
     return Country(iso2_code).country_name
 
 
-def generate_country_fuel_demand_text(df, country_name, year, sub_sector=None):
+def generate_text(df, country_name, year, sub_sector=None, category='fuel'):
+    # fill text based on category
+    if category == 'fuel_demand':
+        _lookup = 'fuel'
+        _fill_text = "the main fuel"
+        _fill_text2 = ' consumed'
+    elif category == 'sub_sector_demand':
+        _lookup = 'sub_sector'
+        _fill_text = "the major energy consumer"
+        _fill_text2 = ''
+    elif category == 'sub_sector_emissions':
+        _lookup = 'sub_sector'
+        _fill_text = "the major emitter"
+        _fill_text2 = ''
+    elif category == 'sub_sector_emission_intensity':
+        _lookup = 'sub_sector'
+        _fill_text = "the major emitter"
+        _fill_text2 = 'by unit of production'
+    else:
+        raise NotImplementedError(f"category={category} not implemented!")
+
     # Demand by fuel
     df['share'] = df['value'] / df['value'].sum()
     df.sort_values('share', ascending=True, inplace=True)
     df['cumulative_share'] = df['share'].cumsum()
 
     # get list of fuels accounting for more than 50%
-    fuel_list = df[df['cumulative_share'] >= .5].copy()
+    category_list = df[df['cumulative_share'] >= .5].copy()
 
-    if len(fuel_list) == 0:
+    if len(category_list) == 0:
         # take the first  element only
-        fuel_list = df.tail(1).set_index('fuel').to_dict()['share']
+        category_list = df.tail(1).set_index(_lookup).to_dict()['share']
     else:
-        fuel_list = fuel_list.set_index('fuel').to_dict()['share']
-    if len(fuel_list) > 1:
-        fuel_list = [f"{u} [{round(v * 100, 2)}%]" for u, v in fuel_list.items()]
-        fuel_list = ', '.join(fuel_list[:-1]) + f' and {fuel_list[-1]} are the main fuels'
+        category_list = category_list.set_index(_lookup).to_dict()['share']
+    if len(category_list) > 1:
+        category_list = [f"'{u}' [{round(v * 100, 1)}%]" for u, v in category_list.items()]
+        category_list = '**' + ', '.join(category_list[:-1]) + f' and {category_list[-1]}** are {_fill_text}s'
     else:
-        print('****')
-        _key = list(fuel_list.keys())[0]
-        fuel_list = f"**{_key} [{round(fuel_list[_key] * 100, 2)}%]** is the main fuel"
+        _key = list(category_list.keys())[0]
+        category_list = f"**'{_key}' [{round(category_list[_key] * 100, 2)}%]** is {_fill_text}"
 
     if sub_sector is not None:
         return f"""
-        {fuel_list} consumed in **{country_name}** by the **{sub_sector}** in **{year}**
+        {category_list} {_fill_text2} in **{country_name}** by the **{sub_sector}** in **{year}**
         """
     else:
         return f"""
-                {fuel_list} consumed in **{country_name}** in **{year}**
+                {category_list} {_fill_text2} in **{country_name}** in **{year}**
                 """
 
 
@@ -94,6 +119,8 @@ with col2:
     iso2s = sorted(list(set(COLOR_DICT_ISO2.keys())))
     iso2 = st.selectbox('Geography:', options=iso2s, key='geography-select',
                         format_func=get_country_name)
+    # get the country name
+    country_name = get_country_name(iso2)
 
 with col3:
     years = list(range(2000, 2016))
@@ -109,6 +136,7 @@ with st.spinner(text='Loading selected geography information ...'):
     df_fuel_demand = pd.DataFrame(country.get_total_fuel_demand())
     total_final_demand = df_fuel_demand['value'].sum()
     total_emissions = country.total_emissions
+    df_fuel_demand_sub_sectors = pd.DataFrame(country.get_total_fuel_demand_all_sub_sectors())
 
     st.write('##')
     # display metrics
@@ -125,18 +153,73 @@ with st.spinner(text='Loading selected geography information ...'):
             value=f"{millify(total_emissions, prefixes=[' tCO2', ' ktCO2', ' mtCO2'])}",
         )
 
-    st.write("#### Final energy demand by fuel")
+    # fuel demand section broken down by fuel and by sub-sector
+    st.write("#### Final energy demand ...")
 
-    # generate text
-    text_fuel_demand = generate_country_fuel_demand_text(
-        df_fuel_demand,
-        country_name=get_country_name(iso2),
-        year=year
-    )
-    st.info(text_fuel_demand)
+    col1, col2 = st.columns([1, 1])
 
-    fig = generate_country_fuel_demand(df_fuel_demand)
-    st.plotly_chart(fig, use_container_width=True)
+    with col1:
+        st.write('##### ... by fuel')
+        # generate text
+        text_card = generate_text(
+            df_fuel_demand,
+            country_name=country_name,
+            year=year,
+            category='fuel_demand'
+        )
+        st.info(text_card)
+        # generate fig
+        fig = generate_country_fuel_demand(df_fuel_demand)
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col2:
+        st.write('##### ... by sub-sector')
+        # generate text
+        text_card = generate_text(
+            df_fuel_demand_sub_sectors,
+            country_name=country_name,
+            year=year,
+            category='sub_sector_demand'
+        )
+        st.warning(text_card)
+        # generate fig
+        fig = generate_country_demand_by_sub_sector(df_fuel_demand_sub_sectors)
+        st.plotly_chart(fig, use_container_width=True)
+
+    # emissions section broken down by sub-sector
+    st.write("#### Sub-sector breakdown by ...")
+
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+        st.write('##### ... total emissions')
+        df_emissions = pd.DataFrame(country.get_total_emissions())
+        # generate text
+        text_card = generate_text(
+            df_emissions,
+            country_name=country_name,
+            year=year,
+            category='sub_sector_emissions'
+        )
+        st.warning(text_card)
+        # generate fig
+        fig = generate_country_emissions_by_sub_sector(df_emissions)
+        st.plotly_chart(fig, use_container_width=True)
+
+    with col2:
+        st.write('##### ... emission intensities')
+        df_efs = pd.DataFrame(country.get_total_emission_intensity())
+        # generate text
+        text_card = generate_text(
+            df_efs,
+            country_name=country_name,
+            year=year,
+            category='sub_sector_emission_intensity'
+        )
+        st.info(text_card)
+        # generate fig
+        fig = generate_emission_intensities_by_sub_sector(df_efs)
+        st.plotly_chart(fig, use_container_width=True)
 
 st.markdown("""---""")
 _, col2, _ = st.columns([2, 1, 2])
@@ -150,7 +233,7 @@ with col2:
 
 with st.sidebar:
     st.write('Current selection:')
-    st.text_input(label='Geography:', value=get_country_name(iso2), disabled=True)
+    st.text_input(label='Geography:', value=country_name, disabled=True)
     st.text_input(label='Reference year:', value=year, disabled=True)
     st.text_input(label='Industry sub-sector:', value=sub_sector, disabled=True)
     st.text_input(label='Industrial process:', value=process, disabled=True)

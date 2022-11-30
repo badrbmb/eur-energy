@@ -39,6 +39,14 @@ COLOR_DICT_ISO2 = {
     'UK': '#DA16FF'
 }
 
+COLOR_DICT_SUB_SECTORS = {
+    'Chemicals Industry': '#636EFA',
+    'Iron and steel': '#EF553B',
+    'Non Ferrous Metals': '#00CC96',
+    'Non-metallic mineral products': '#AB63FA',
+    'Pulp, paper and printing': '#FFA15A'
+}
+
 
 def generate_heatmap(df_map, variable_to_show, country_borders, process):
     df_show_map = df_map[
@@ -180,8 +188,55 @@ def generate_cumulative_chart(df_data, reference_year, variable_to_show, colors_
     return fig
 
 
-def generate_country_fuel_demand(df_fuel_demand):
-    fig = px.pie(df_fuel_demand, names='fuel', values='value', hover_data=['unit'])
+def generate_country_fuel_demand(df_fuel_demand, exclude_null=True):
+    df_plot = df_fuel_demand.copy()
+    if exclude_null:
+        df_plot = df_plot[df_fuel_demand['value'] > 0]
+    fig = px.pie(df_plot, names='fuel', values='value', hover_data=['unit'])
+    fig.update_layout(
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+    )
+    return fig
+
+
+def generate_country_demand_by_sub_sector(df_fuel_demand_sub_sector):
+    fig = px.pie(df_fuel_demand_sub_sector, names='sub_sector', values='value', hover_data=['unit'],
+                 color='sub_sector', color_discrete_map=COLOR_DICT_SUB_SECTORS)
+    fig.update_layout(
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+    )
+    return fig
+
+
+def generate_emission_intensities_by_sub_sector(df_efs):
+    # add text
+    df_efs['text'] = round(df_efs['value'])
+    fig = px.bar(df_efs, x='sub_sector', y='value', hover_data=['unit'], text='text', color='sub_sector',
+                 color_discrete_map=COLOR_DICT_SUB_SECTORS)
+    fig.update_layout(
+        yaxis=dict(title='Total emission intensity (kgCO2/tonne)'),
+        xaxis=dict(title=''),
+        showlegend=False
+    )
+    return fig
+
+
+def generate_country_emissions_by_sub_sector(df_emissions):
+    # covert to mt and add metadata
+    df_emissions['value'] = df_emissions['value'] / 1e9
+    df_emissions['unit'] = 'mtCO2'
+    df_emissions['share'] = round(df_emissions['value'] * 100 / df_emissions['value'].sum(), 1)
+
+    df_emissions['text'] = df_emissions.apply(lambda x: f"{x['sub_sector']} ({x['share']}%)", axis=1)
+    fig = px.icicle(
+        df_emissions,
+        path=[px.Constant("Industry"), 'sub_sector'], hover_data=['unit'],
+        values='value', color='sub_sector', custom_data=['share'],
+        color_discrete_map=COLOR_DICT_SUB_SECTORS
+    )
+    fig.update_traces(
+        texttemplate="%{label}: %{value:.2f} mtCO2 <br>(%{customdata[0]}%)",
+    )
     fig.update_layout(
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
     )
