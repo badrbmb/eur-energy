@@ -43,14 +43,14 @@ def load_datasets():
     return activity_df, demand_df, emission_df
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True, ttl=24 * 3600)
 def load_country_data(ref_iso2, ref_year):
     return compose_country(
         iso2=ref_iso2, year=ref_year, demand_df=demand_df, activity_df=activity_df, emission_df=emission_df
     )
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True, ttl=24 * 3600)
 def load_sub_sector_summary(sub_sector_name):
     sub_sector = country.get_sub_sector(sub_sector_name)
     df = pd.DataFrame(sub_sector.get_summary(add_fuels=False))
