@@ -270,7 +270,7 @@ def generate_sub_sector_summary_plot(df_plot, variable):
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
         plot_bgcolor='rgba(0,0,0,0)'
     )
-    fig.update_xaxes(showline=True, linewidth=2, linecolor='#d6d6d6')
+    fig.update_xaxes(showline=True, linewidth=2, linecolor='#d6d6d6', title='Process')
     fig.update_yaxes(
         showgrid=False, zeroline=False,
         showline=True, linewidth=2, linecolor='#d6d6d6',
