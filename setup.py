@@ -18,7 +18,9 @@ setup(
     packages=find_packages(),
     install_requires=[
         "beautifulsoup4==4.11.1",
+        "google-cloud-bigquery==3.4.0",
         "pandas==1.2.4",
+        "pandas-gbq==0.18.1",
         "plotly==5.8.0",
         "pycountry==22.3.5",
         "millify==0.1.1",

@@ -184,4 +184,6 @@ cython_debug/
 
 data/
 notebooks/
+eur_energy/visualisation/.streamlit/secrets.toml
+
 

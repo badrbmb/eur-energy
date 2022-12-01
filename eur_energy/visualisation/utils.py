@@ -1,6 +1,28 @@
+import streamlit as st
+from google.oauth2 import service_account
+from streamlit.runtime.scriptrunner import RerunData, RerunException
+from streamlit.source_util import get_pages
+
+
+def load_credentials():
+    """
+    Load service account credentials for Google cloud services
+    Returns:
+
+    """
+    # Create API client.
+    credentials = service_account.Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"]
+    )
+    return credentials
+
+
 def hide_footer():
-    # hide streamlit footer (if needed?)
-    import streamlit as st
+    """
+    Hide streamlit footer (not used)
+    Returns:
+    """
+
     hide_streamlit_style = """
                 <style>
                 #MainMenu {visibility: hidden;}
@@ -20,8 +42,6 @@ def switch_page(page_name: str, main="🏠_Home.py"):
         main: the basename of the file containing main streamlit app
     Returns:
     """
-    from streamlit.runtime.scriptrunner import RerunData, RerunException
-    from streamlit.source_util import get_pages
 
     def standardize_name(name: str) -> str:
         return name.lower().replace("_", " ")
@@ -127,6 +147,7 @@ def generate_multiplier_prefixes(unit):
         raise NotImplementedError(f"unit={unit} not handled")
 
     return multiplier, prefixes
+
 
 """
 Contact information

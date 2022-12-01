@@ -8,7 +8,7 @@ from eur_energy import config
 from eur_energy.model.countries import Country
 from eur_energy.model.processes import VALID_SUBSECTOR_PROCESSES
 from eur_energy.visualisation.figure_factory import generate_heatmap, generate_cumulative_chart, COLOR_DICT_ISO2
-from eur_energy.visualisation.utils import generate_multiplier_prefixes
+from eur_energy.visualisation.utils import generate_multiplier_prefixes, load_credentials
 
 st.set_page_config(
     page_title="Explore",
@@ -50,21 +50,16 @@ def load_borders():
     return data
 
 
-@st.cache(ttl=24 * 3600)
+@st.experimental_memo(ttl=24 * 3600)
 def load_dataset():
-    # load data
-    df_demand = pd.read_csv(config.DATA_FOLDER / 'formatted/demand_data.csv', index_col=0)
-    df_activity = pd.read_csv(config.DATA_FOLDER / 'formatted/activity_data.csv', index_col=0)
-    df_emissions = pd.read_csv(config.DATA_FOLDER / 'formatted/emission_data.csv', index_col=0)
-
-    df_dem = df_demand.groupby(
-        ['iso2', 'year', 'sector', 'sub_sector', 'process', 'variable', 'unit']).sum().reset_index()
-    df_act = df_activity.groupby(
-        ['iso2', 'year', 'sector', 'sub_sector', 'process', 'variable', 'unit']).sum().reset_index()
-    df_emi = df_emissions.groupby(
-        ['iso2', 'year', 'sector', 'sub_sector', 'process', 'variable', 'unit']).sum().reset_index()
-
-    return pd.concat([df_dem, df_act, df_emi], axis=0)
+    credentials = load_credentials()
+    raw_query = """
+    SELECT iso2, year, sector, sub_sector, process, variable, unit, SUM(value) as value FROM `eur-energy.JRC_IDEES.$TABLE`
+    group by iso2, year, sector, sub_sector, process, variable, unit
+    """
+    query_list = [raw_query.replace('$TABLE', table) for table in ['activity_data', 'demand_data', 'emission_data']]
+    query = '\nUNION ALL\n'.join(query_list)
+    return pd.read_gbq(query=query, credentials=credentials)
 
 
 def filter_df():
