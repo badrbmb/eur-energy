@@ -73,12 +73,13 @@ st.markdown(
     """
      ### Attribution
 
-    This app leverages data from multiple sources: 
+    This app leverages files from multiple sources: 
 
     - [The JRC Integrated Database of the European Energy System](https://publications.jrc.ec.europa.eu/repository/handle/JRC112474), published by the European Commission
     - [Yearly electricity data](https://ember-climate.org/data-catalogue/yearly-electricity-data/), published by EMBER
     - [The Nomenclature of territorial units for statistics](https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts), published by eurostat
     - [Greenhouse Gas Emissions from Energy](https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf), published by the IEA
     - favicon by [icon8](https://icons8.com/)
+    - lottie animation by [Y. Pauranik](https://lottiefiles.com/85893-stack-blue-cs)
 """
 )

@@ -100,9 +100,6 @@ def generate_card(wch_colour_box=(255, 255, 255), title_colour_font=(0, 0, 0), s
     return lnk + htmlstr
 
 
-CONTACT_EMAIL = 'badr.benb@gmail.com'
-
-
 def generate_multiplier_prefixes(unit):
     """
     Generates suffixes for displaying pretty number using millify
@@ -130,3 +127,13 @@ def generate_multiplier_prefixes(unit):
         raise NotImplementedError(f"unit={unit} not handled")
 
     return multiplier, prefixes
+
+"""
+Contact information
+"""
+CONTACT_EMAIL = 'badr.benb@gmail.com'
+
+"""
+Lottie animations
+"""
+LOTTIE_URL = "https://assets5.lottiefiles.com/packages/lf20_nbs5jzhd.json"
