@@ -1,3 +1,5 @@
+import re
+
 import pandas as pd
 import streamlit as st
 from millify import millify
@@ -11,7 +13,8 @@ from eur_energy.visualisation.figure_factory import (
     generate_country_fuel_demand,
     generate_country_demand_by_sub_sector,
     generate_emission_intensities_by_sub_sector,
-    generate_country_emissions_by_sub_sector
+    generate_country_emissions_by_sub_sector,
+    generate_sub_sector_summary_plot
 )
 
 st.set_page_config(
@@ -40,11 +43,30 @@ def load_datasets():
     return activity_df, demand_df, emission_df
 
 
+@st.cache(allow_output_mutation=True)
+def load_country_data(ref_iso2, ref_year):
+    return compose_country(
+        iso2=ref_iso2, year=ref_year, demand_df=demand_df, activity_df=activity_df, emission_df=emission_df
+    )
+
+
+@st.cache(allow_output_mutation=True)
+def load_sub_sector_summary(sub_sector_name):
+    sub_sector = country.get_sub_sector(sub_sector_name)
+    df = pd.DataFrame(sub_sector.get_summary(add_fuels=False))
+    df = df.reset_index().melt(id_vars='index', var_name='process')
+    df.rename(columns={'index': 'variable'}, inplace=True)
+    df['unit'] = df['variable'].apply(lambda x: re.findall('\((.*?)\)', x)[0])
+    df['variable'] = df['variable'].apply(lambda x: re.sub('\((.*?)\)', '', x).strip())
+
+    return df
+
+
 def get_country_name(iso2_code):
     return Country(iso2_code).country_name
 
 
-def generate_text(df, country_name, year, sub_sector=None, category='fuel'):
+def generate_text(df, country_name, year, sub_sector=None, category='fuel', variable=None):
     # fill text based on category
     if category == 'fuel_demand':
         _lookup = 'fuel'
@@ -56,12 +78,16 @@ def generate_text(df, country_name, year, sub_sector=None, category='fuel'):
         _fill_text2 = ''
     elif category == 'sub_sector_emissions':
         _lookup = 'sub_sector'
-        _fill_text = "the major emitter"
+        _fill_text = "the major industrial emitter"
         _fill_text2 = ''
     elif category == 'sub_sector_emission_intensity':
         _lookup = 'sub_sector'
         _fill_text = "the major emitter"
         _fill_text2 = 'by unit of production'
+    elif category == 'sub_sector_summary_variable':
+        _lookup = 'process'
+        _fill_text = "the major contributor"
+        _fill_text2 = f"by **{variable.lower()}**"
     else:
         raise NotImplementedError(f"category={category} not implemented!")
 
@@ -113,10 +139,12 @@ st.markdown("""
 st.markdown("""---""")
 
 # organise layout in columns
-_, col2, col3, _ = st.columns([2, 1, 1, 2])
+_, col2, col3, _ = st.columns([2, 2, 2, 2])
 
 with col2:
-    iso2s = sorted(list(set(COLOR_DICT_ISO2.keys())))
+    iso2s = [t for t in sorted(list(set(COLOR_DICT_ISO2.keys()))) if t not in ['EU27+UK', 'EU28']]
+    # add EU28 at the top of the list
+    iso2s = ['EU28'] + iso2s
     iso2 = st.selectbox('Geography:', options=iso2s, key='geography-select',
                         format_func=get_country_name)
     # get the country name
@@ -128,19 +156,20 @@ with col3:
 
 # load the selected country
 with st.spinner(text='Loading selected geography information ...'):
-    country = compose_country(
-        iso2=iso2, year=year, demand_df=demand_df, activity_df=activity_df, emission_df=emission_df
-    )
+    country = load_country_data(ref_iso2=iso2, ref_year=year)
 
+if country is not None:
     # derive fuel demand and total emissions
-    df_fuel_demand = pd.DataFrame(country.get_total_fuel_demand())
-    total_final_demand = df_fuel_demand['value'].sum()
-    total_emissions = country.total_emissions
-    df_fuel_demand_sub_sectors = pd.DataFrame(country.get_total_fuel_demand_all_sub_sectors())
 
     st.write('##')
     # display metrics
-    _, col2, col3, _ = st.columns([2, 1, 1, 2])
+
+    # load data
+    df_fuel_demand = pd.DataFrame(country.get_total_fuel_demand())
+    total_final_demand = df_fuel_demand['value'].sum()
+    total_emissions = country.total_emissions
+
+    _, col2, col3, _ = st.columns([2, 2, 2, 2])
 
     with col2:
         st.metric(
@@ -174,6 +203,7 @@ with st.spinner(text='Loading selected geography information ...'):
 
     with col2:
         st.write('##### ... by sub-sector')
+        df_fuel_demand_sub_sectors = pd.DataFrame(country.get_total_fuel_demand_all_sub_sectors())
         # generate text
         text_card = generate_text(
             df_fuel_demand_sub_sectors,
@@ -221,19 +251,50 @@ with st.spinner(text='Loading selected geography information ...'):
         fig = generate_emission_intensities_by_sub_sector(df_efs)
         st.plotly_chart(fig, use_container_width=True)
 
-st.markdown("""---""")
-_, col2, _ = st.columns([2, 1, 2])
-with col2:
-    sub_sector = st.selectbox('Sub-sector:', options=sub_sector_names, key='sub-sector-select')
+    # sub-sector session
+    st.markdown("""---""")
+    _, col2, _ = st.columns([4, 3, 4])
+    with col2:
+        sub_sector_name = st.selectbox('Sub-sector:', options=sub_sector_names, key='sub-sector-select')
 
-st.markdown("""---""")
-_, col2, _ = st.columns([2, 1, 2])
-with col2:
-    process = st.selectbox('Process:', options=VALID_SUBSECTOR_PROCESSES[sub_sector], key='process-select')
+    # load the sub-sector information
+    df_sub_sector_summary = load_sub_sector_summary(sub_sector_name)
 
-with st.sidebar:
-    st.write('Current selection:')
-    st.text_input(label='Geography:', value=country_name, disabled=True)
-    st.text_input(label='Reference year:', value=year, disabled=True)
-    st.text_input(label='Industry sub-sector:', value=sub_sector, disabled=True)
-    st.text_input(label='Industrial process:', value=process, disabled=True)
+    col1, col2 = st.columns([1, 3])
+
+    with col1:
+        variable = st.radio('Variable:', options=df_sub_sector_summary['variable'].unique(), key='variable-select')
+
+        st.write('##')
+
+        # filter variable
+        df_sub_sector_variable = df_sub_sector_summary[df_sub_sector_summary['variable'] == variable].copy()
+
+        # generate text
+        text_card = generate_text(
+            df_sub_sector_variable,
+            country_name=country_name,
+            year=year,
+            category='sub_sector_summary_variable',
+            variable=variable
+        )
+        st.info(text_card)
+
+    with col2:
+        fig = generate_sub_sector_summary_plot(df_sub_sector_variable, variable)
+        st.plotly_chart(fig, use_container_width=True)
+
+    # display each process general information
+
+    st.markdown("""---""")
+    _, col2, _ = st.columns([4, 3, 4])
+    with col2:
+        process_name = st.selectbox('Process:', options=VALID_SUBSECTOR_PROCESSES[sub_sector_name],
+                                    key='process-select')
+
+    with st.sidebar:
+        st.write('Current selection:')
+        st.text_input(label='Geography:', value=country_name, disabled=True)
+        st.text_input(label='Reference year:', value=year, disabled=True)
+        st.text_input(label='Industry sub-sector:', value=sub_sector_name, disabled=True)
+        st.text_input(label='Industrial process:', value=process_name, disabled=True)

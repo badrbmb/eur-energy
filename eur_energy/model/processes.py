@@ -4,6 +4,7 @@ from typing import List, Optional
 
 import numpy as np
 import pandas as pd
+
 from eur_energy.model.categories import ConsumptionCategory
 
 logging.basicConfig(level=logging.INFO)
@@ -261,7 +262,7 @@ class Process:
         """
         _out = {
             'Physical output (tonnes)': round(self.production.physical_output, rounding),
-            'Total fuel demand intensity (GJ)': round(self.total_fuel_demand, rounding),
+            'Total fuel demand (GJ)': round(self.total_fuel_demand, rounding),
             'Electricity share of total demand (%)': round(self.electricity_share_of_demand * 100, rounding),
             'Total fuel demand intensity (GJ/tonne)': round(self.total_fuel_demand_intensity, rounding),
             'Total emissions (kgCO2)': round(self.total_emissions, rounding),

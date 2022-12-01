@@ -8,6 +8,7 @@ from eur_energy import config
 from eur_energy.model.countries import Country
 from eur_energy.model.processes import VALID_SUBSECTOR_PROCESSES
 from eur_energy.visualisation.figure_factory import generate_heatmap, generate_cumulative_chart, COLOR_DICT_ISO2
+from eur_energy.visualisation.utils import generate_multiplier_prefixes
 
 st.set_page_config(
     page_title="Explore",
@@ -83,35 +84,6 @@ def filter_df():
     df_out['country'] = df_out['iso2'].apply(lambda x: Country(iso2=x).country_name)
 
     return df_out
-
-
-def generate_multiplier_prefixes(unit):
-    """
-    Generates suffixes for displaying pretty number using millify
-    Args:
-        unit:
-    Returns:
-
-    """
-    if unit == 'GJ':
-        multiplier = 1e9
-        prefixes = [' kJ', ' MJ', ' GJ', ' TJ', ' PJ']
-    elif unit == 'GJ/tonne':
-        multiplier = 1e9
-        prefixes = [' kJ/tonne', ' MJ/tonne', ' GJ/tonne', ' TJ/tonne', ' PJ/tonne']
-    elif unit == 'tonne':
-        multiplier = 1
-        prefixes = [' kt', ' mt']
-    elif unit == 'kgCO2':
-        multiplier = 1
-        prefixes = [' tCO2', ' ktCO2', ' mtCO2']
-    elif unit == 'kgCO2/tonne':
-        multiplier = 1
-        prefixes = [' tCO2/tonne', ' ktCO2/tonne', ' mtCO2/tonne']
-    else:
-        raise NotImplementedError(f"unit={unit} not handled")
-
-    return multiplier, prefixes
 
 
 def generate_text_map(df_in, variable_to_show):

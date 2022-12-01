@@ -5,7 +5,6 @@ from enum import Enum
 from pathlib import Path
 from typing import List, Union, Optional
 
-import numpy
 import numpy as np
 import pandas as pd
 
@@ -48,6 +47,26 @@ def load_carbon_content(path: Path = None, convert_to_co2=True) -> dict:
 # Load emissions by fuel
 FUEL_EMISSION_INTENSITIES = load_carbon_content()
 
+# classification of fuel categories
+FUEL_CATEGORIES = {
+    'Electricity': 'Electricity',
+    'Diesel oil': 'Fossil fuel',
+    'LPG': 'Fossil fuel',
+    'Naphtha': 'Fossil fuel',
+    'Natural gas': 'Fossil fuel',
+    'Other liquids': 'Fossil fuel',
+    'Refinery gas': 'Other',
+    'Residual fuel oil': 'Fossil fuel',
+    'Solids': 'Fossil fuel',
+    'Diesel oil (incl. biofuels)': '',
+    'Natural gas (incl. biogas)': '',
+    'Biomass': '',
+    'Derived gases': '',
+    'Steam distributed': '',
+    'Solar and geothermal': '',
+    'Coke': 'Fossil fuel'
+}
+
 
 class FuelType(Enum):
     electricity = 'Electricity'
@@ -66,6 +85,10 @@ class FuelType(Enum):
     steam_distributed = 'Steam distributed'
     solar_and_geothermal = 'Solar and geothermal'
     coke = 'Coke'
+
+    @property
+    def fuel_category(self):
+        return FUEL_CATEGORIES.get(self.value)
 
 
 @dataclass

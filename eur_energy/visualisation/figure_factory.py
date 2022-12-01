@@ -1,9 +1,11 @@
 import re
 
 import numpy as np
+from millify import millify
 from plotly import express as px, graph_objects as go
 
 from eur_energy.model.countries import Country
+from eur_energy.visualisation.utils import generate_multiplier_prefixes
 
 # colors by country
 COLOR_DICT_ISO2 = {
@@ -239,5 +241,39 @@ def generate_country_emissions_by_sub_sector(df_emissions):
     )
     fig.update_layout(
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
+    )
+    return fig
+
+
+def generate_sub_sector_summary_plot(df_plot, variable):
+    # get unit
+    _unit = df_plot['unit'].values[0]
+
+    # add text using "millified" values
+    def _format_text(x, unit):
+        try:
+            _multiplier, _prefixes = generate_multiplier_prefixes(unit)
+            if len(str(int(x))) >= 4:
+                # means it does need a multiplier:
+                return millify(x * _multiplier, prefixes=_prefixes, precision=2)
+            else:
+                return f"{round(x, 1)} {unit}"
+        except NotImplementedError:
+            # must be percentage
+            return f"{round(x, 2)}%"
+
+    df_plot['text'] = df_plot['value'].apply(lambda x: _format_text(x, unit=_unit))
+    fig = px.bar(df_plot, x='process', y='value', color='process', text='text')
+    fig.update_layout(
+        showlegend=False,
+        yaxis=dict(title=f'{variable}'),
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        plot_bgcolor='rgba(0,0,0,0)'
+    )
+    fig.update_xaxes(showline=True, linewidth=2, linecolor='#d6d6d6')
+    fig.update_yaxes(
+        showgrid=False, zeroline=False,
+        showline=True, linewidth=2, linecolor='#d6d6d6',
+        showticklabels=False,
     )
     return fig

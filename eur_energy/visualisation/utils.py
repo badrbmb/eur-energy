@@ -101,3 +101,32 @@ def generate_card(wch_colour_box=(255, 255, 255), title_colour_font=(0, 0, 0), s
 
 
 CONTACT_EMAIL = 'badr.benb@gmail.com'
+
+
+def generate_multiplier_prefixes(unit):
+    """
+    Generates suffixes for displaying pretty number using millify
+    Args:
+        unit:
+    Returns:
+
+    """
+    if unit == 'GJ':
+        multiplier = 1e9
+        prefixes = [' kJ', ' MJ', ' GJ', ' TJ', ' PJ']
+    elif unit == 'GJ/tonne':
+        multiplier = 1e9
+        prefixes = [' kJ/tonne', ' MJ/tonne', ' GJ/tonne', ' TJ/tonne', ' PJ/tonne']
+    elif unit in ['tonne', 'tonnes']:
+        multiplier = 1
+        prefixes = [' kt', ' mt']
+    elif unit == 'kgCO2':
+        multiplier = 1
+        prefixes = [' tCO2', ' ktCO2', ' mtCO2']
+    elif unit == 'kgCO2/tonne':
+        multiplier = 1
+        prefixes = [' tCO2/tonne', ' ktCO2/tonne', ' mtCO2/tonne']
+    else:
+        raise NotImplementedError(f"unit={unit} not handled")
+
+    return multiplier, prefixes
