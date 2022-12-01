@@ -69,17 +69,31 @@ scenario_view = scenario_form.form_submit_button("🎥 Simulate")
 if scenario_view:
     switch_page("Simulate")
 
-st.markdown(
+st.markdown("""---""")
+
+st.markdown("""
+### Resources
+
+Below is a quick methodology note as well as a list of useful resources/attributions. 
+""")
+with st.expander(label='Methodology'):
+    st.markdown(
+        """
+        Work in progress ...
+         ¯\_(ツ)_/¯
+        """
+    )
+
+with st.expander(label='Attribution'):
+    st.markdown(
+        """    
+        This app leverages files from multiple sources: 
+    
+        - [The JRC Integrated Database of the European Energy System](https://publications.jrc.ec.europa.eu/repository/handle/JRC112474), published by the European Commission
+        - [Yearly electricity data](https://ember-climate.org/data-catalogue/yearly-electricity-data/), published by EMBER
+        - [The Nomenclature of territorial units for statistics](https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts), published by eurostat
+        - [Greenhouse Gas Emissions from Energy](https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf), published by the IEA
+        - favicon by [icon8](https://icons8.com/)
+        - lottie animation by [Y. Pauranik](https://lottiefiles.com/85893-stack-blue-cs)
     """
-     ### Attribution
-
-    This app leverages files from multiple sources: 
-
-    - [The JRC Integrated Database of the European Energy System](https://publications.jrc.ec.europa.eu/repository/handle/JRC112474), published by the European Commission
-    - [Yearly electricity data](https://ember-climate.org/data-catalogue/yearly-electricity-data/), published by EMBER
-    - [The Nomenclature of territorial units for statistics](https://ec.europa.eu/eurostat/web/gisco/geodata/reference-data/administrative-units-statistical-units/nuts), published by eurostat
-    - [Greenhouse Gas Emissions from Energy](https://iea.blob.core.windows.net/assets/78ca213f-171e-40ed-bf7e-c053d4376e79/WORLD_GHG_Documentation.pdf), published by the IEA
-    - favicon by [icon8](https://icons8.com/)
-    - lottie animation by [Y. Pauranik](https://lottiefiles.com/85893-stack-blue-cs)
-"""
-)
+    )
