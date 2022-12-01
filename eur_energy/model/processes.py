@@ -208,6 +208,21 @@ class Process:
         )
         return _out
 
+    @property
+    def fuel_intensity_details(self) -> list[dict]:
+        """
+        Returns:
+            - list[dict]: list of fuel demand intensities broken-down by category
+        """
+        _out = [
+            {
+                'category': t.category_name,
+                'value': t.total_fuel_demand_intensity,
+                'unit': 'GJ/tonne'
+            } for t in self.categories
+        ]
+        return _out
+
     def get_fuel_mixt_details(self, category: Optional[str] = None, method: str = 'relative') -> list[dict]:
         """
         Get the fuel mixt for the process, with optional selection of a given category only
@@ -282,3 +297,10 @@ class Process:
             }
 
         return _out
+
+    def get_summary_intensities_by_category(self) -> list:
+        """
+        Summary of fuel and emission intensity for all categories in the process
+        Returns:
+        """
+        return self.fuel_intensity_details + self.emission_intensity_details

@@ -277,3 +277,35 @@ def generate_sub_sector_summary_plot(df_plot, variable):
         showticklabels=False,
     )
     return fig
+
+
+def generate_process_details_graph(data, variable, rounding, unit):
+
+    # store waterfall values
+    _values = [t['value'] for t in data] + [0]
+    _names = [t['category'] for t in data] + ["Total"]
+    _measure = ['relative'] * len(_values[:-1]) + ['total']
+    _text = [round(t, rounding) for t in _values[:-1]] + [round(sum(_values), rounding)]
+
+    # create waterfall chart
+    fig = go.Figure(
+        go.Waterfall(
+            orientation="v",
+            measure=_measure,
+            x=_names,
+            textposition="outside",
+            text=_text,
+            y=_values,
+            decreasing={"marker": {"color": "#29bfb1"}},
+            increasing={"marker": {"color": "#dc3444"}},
+            connector={"line": {"color": "rgb(63, 63, 63)"}},
+        )
+    )
+
+    fig.update_layout(
+        yaxis=dict(title=f"{variable} ({unit}"),
+        height=550,
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+    )
+
+    return fig

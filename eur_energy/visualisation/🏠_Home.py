@@ -50,7 +50,7 @@ scenario_form.markdown(
 )
 scenario_view = scenario_form.form_submit_button("🎯 Assess")
 if scenario_view:
-    switch_page("Explore")
+    switch_page("Assess")
 
 # scenario card
 scenario_form = st.form(key='scenario-card')
