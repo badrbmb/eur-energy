@@ -32,7 +32,11 @@ setup(
     include_package_data=True,
     package_data={
         "eur_energy": [
-            "data/schema"
+            "data/schema",
+            'data/IEA/carbon_content_fuel.csv',
+            'data/EMBER/yearly_full_release_long_format.csv',
+            'data/images/icons8-power-plant-48.png',
+            'data/NUTS_RG_60M_2021_4326.geojson'
         ]
     },
     author="Badr Ben m'barek",

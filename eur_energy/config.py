@@ -1,11 +1,13 @@
 import os
 from pathlib import Path
 
+import pkg_resources
+
 """
 Local path to store/access files
 """
-ROOT_DIR = Path(__file__).parent.parent
-DATA_FOLDER = ROOT_DIR / "data"
+# ROOT_DIR = Path(__file__).parent.parent # not used when packaged
+DATA_FOLDER = Path(pkg_resources.resource_filename("eur_energy", 'data'))
 RAW_DATA_FOLDER = DATA_FOLDER / "raw"
 FORMATTED_DATA_FOLDER = DATA_FOLDER / "formatted"
 SCHEMA_FOLDER = DATA_FOLDER / "schema"
