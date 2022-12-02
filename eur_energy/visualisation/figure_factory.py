@@ -92,6 +92,8 @@ def generate_cumulative_chart(df_data, reference_year, variable_to_show, colors_
     # append unit to each variable
     df_stats['variable'] = df_stats.apply(lambda x: f"{x['variable']} ({x['unit']})", axis=1)
     df_stats = df_stats.pivot('iso2', 'variable', 'value').reset_index()
+    # drop country with no production
+    df_stats = df_stats[df_stats['Physical output (tonne)'] > 0].copy()
     # convert physical output to Mt
     df_stats['Physical output (tonne)'] *= 1 / 1e6
     df_stats.rename(columns={'Physical output (tonne)': 'Physical output (million tonnes)'}, inplace=True)
@@ -280,7 +282,6 @@ def generate_sub_sector_summary_plot(df_plot, variable):
 
 
 def generate_process_details_graph(data, variable, rounding, unit):
-
     # store waterfall values
     _values = [t['value'] for t in data] + [0]
     _names = [t['category'] for t in data] + ["Total"]
