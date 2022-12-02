@@ -1,0 +1,106 @@
+{
+  "Integrated steelworks": {
+    "Lighting": null,
+    "Air compressors": null,
+    "Motor drives": null,
+    "Fans and pumps": null,
+    "Low enthalpy heat": [
+      "Diesel oil (incl. biofuels)",
+      "Natural gas (incl. biogas)",
+      "Solar and geothermal",
+      "Electricity"
+    ],
+    "Steel: Sinter/Pellet making": [
+      "Solids",
+      "Residual fuel oil",
+      "Natural gas (incl. biogas)",
+      "Derived gases",
+      "Electricity"
+    ],
+    "Steel: Blast /Basic oxygen furnace": [
+      "Solids",
+      "Coke",
+      "Residual fuel oil",
+      "Natural gas (incl. biogas)",
+      "Derived gases"
+    ],
+    "Steel: Furnaces, Refining and Rolling": {
+      "Steel: Furnaces, Refining and Rolling - Thermal": [
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Residual fuel oil",
+        "Natural gas (incl. biogas)"
+      ],
+      "Steel: Furnaces, Refining and Rolling - Electric": null
+    },
+    "Steel: Products finishing": {
+      "Steel: Products finishing - Thermal": [
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Natural gas (incl. biogas)"
+      ],
+      "Steel: Products finishing - Steam": [
+        "Solids",
+        "Refinery gas",
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Residual fuel oil",
+        "Other liquids",
+        "Natural gas (incl. biogas)",
+        "Derived gases",
+        "Biomass",
+        "Steam distributed"
+      ],
+      "Steel: Products finishing - Electric": null
+    }
+  },
+  "Electric arc": {
+    "Lighting": null,
+    "Air compressors": null,
+    "Motor drives": null,
+    "Fans and pumps": null,
+    "Low enthalpy heat": [
+      "Diesel oil (incl. biofuels)",
+      "Natural gas (incl. biogas)",
+      "Solar and geothermal",
+      "Electricity"
+    ],
+    "Steel: Smelters": [
+      "Solids",
+      "Residual fuel oil",
+      "Natural gas (incl. biogas)",
+      "Derived gases",
+      "Electricity"
+    ],
+    "Steel: Electric arc": null,
+    "Steel: Furnaces, Refining and Rolling": {
+      "Steel: Furnaces, Refining and Rolling - Thermal": [
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Residual fuel oil",
+        "Natural gas (incl. biogas)"
+      ],
+      "Steel: Furnaces, Refining and Rolling - Electric": null
+    },
+    "Steel: Products finishing": {
+      "Steel: Products finishing - Thermal": [
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Natural gas (incl. biogas)"
+      ],
+      "Steel: Products finishing - Steam": [
+        "Solids",
+        "Refinery gas",
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Residual fuel oil",
+        "Other liquids",
+        "Natural gas (incl. biogas)",
+        "Derived gases",
+        "Biomass",
+        "Steam distributed"
+      ],
+      "Steel: Products finishing - Electric": null
+    }
+  }
+}

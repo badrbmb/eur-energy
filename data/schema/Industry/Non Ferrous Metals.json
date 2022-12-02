@@ -1,0 +1,176 @@
+{
+  "Alumina production": {
+    "Lighting": null,
+    "Air compressors": null,
+    "Motor drives": null,
+    "Fans and pumps": null,
+    "Low enthalpy heat": [
+      "Diesel oil (incl. biofuels)",
+      "Natural gas (incl. biogas)",
+      "Solar and geothermal",
+      "Electricity"
+    ],
+    "Alumina production: High enthalpy heat": [
+      "Solids",
+      "Refinery gas",
+      "LPG",
+      "Diesel oil (incl. biofuels)",
+      "Residual fuel oil",
+      "Other liquids",
+      "Natural gas (incl. biogas)",
+      "Derived gases",
+      "Biomass",
+      "Steam distributed"
+    ],
+    "Alumina production: Refining": [
+      "LPG",
+      "Diesel oil (incl. biofuels)",
+      "Residual fuel oil",
+      "Natural gas (incl. biogas)",
+      "Electricity"
+    ]
+  },
+  "Aluminium - primary production": {
+    "Lighting": null,
+    "Air compressors": null,
+    "Motor drives": null,
+    "Fans and pumps": null,
+    "Low enthalpy heat": [
+      "Diesel oil (incl. biofuels)",
+      "Natural gas (incl. biogas)",
+      "Solar and geothermal",
+      "Electricity"
+    ],
+    "Aluminium electrolysis (smelting)": null,
+    "Aluminium processing  (metallurgy e.g. cast house, reheating)": {
+      "Aluminium processing - Thermal": [
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Residual fuel oil",
+        "Natural gas (incl. biogas)"
+      ],
+      "Aluminium processing - Electric": null
+    },
+    "Aluminium finishing": {
+      "Aluminium finishing - Thermal": [
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Natural gas (incl. biogas)"
+      ],
+      "Aluminium finishing - Steam": [
+        "Solids",
+        "Refinery gas",
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Residual fuel oil",
+        "Other liquids",
+        "Natural gas (incl. biogas)",
+        "Derived gases",
+        "Biomass",
+        "Steam distributed"
+      ],
+      "Aluminium finishing - Electric": null
+    }
+  },
+  "Aluminium - secondary production": {
+    "Lighting": null,
+    "Air compressors": null,
+    "Motor drives": null,
+    "Fans and pumps": null,
+    "Low enthalpy heat": [
+      "Diesel oil (incl. biofuels)",
+      "Natural gas (incl. biogas)",
+      "Solar and geothermal",
+      "Electricity"
+    ],
+    "Secondary aluminium (incl. pre-treatment, remelting)": {
+      "Secondary aluminium - Thermal": [
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Residual fuel oil",
+        "Natural gas (incl. biogas)"
+      ],
+      "Secondary aluminium - Electric": null
+    },
+    "Aluminium processing  (metallurgy e.g. cast house, reheating)": {
+      "Aluminium processing - Thermal": [
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Residual fuel oil",
+        "Natural gas (incl. biogas)"
+      ],
+      "Aluminium processing - Electric": null
+    },
+    "Aluminium finishing": {
+      "Aluminium finishing - Thermal": [
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Natural gas (incl. biogas)"
+      ],
+      "Aluminium finishing - Steam": [
+        "Solids",
+        "Refinery gas",
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Residual fuel oil",
+        "Other liquids",
+        "Natural gas (incl. biogas)",
+        "Derived gases",
+        "Biomass",
+        "Steam distributed"
+      ],
+      "Aluminium finishing - Electric": null
+    }
+  },
+  "Other non-ferrous metals": {
+    "Lighting": null,
+    "Air compressors": null,
+    "Motor drives": null,
+    "Fans and pumps": null,
+    "Low enthalpy heat": [
+      "Diesel oil (incl. biofuels)",
+      "Natural gas (incl. biogas)",
+      "Solar and geothermal",
+      "Electricity"
+    ],
+    "Other Metals: production": {
+      "Metal production - Thermal": [
+        "Solids",
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Residual fuel oil",
+        "Natural gas (incl. biogas)"
+      ],
+      "Metal production - Electric": null
+    },
+    "Metal processing  (metallurgy e.g. cast house, reheating)": {
+      "Metal processing - Thermal": [
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Residual fuel oil",
+        "Natural gas (incl. biogas)"
+      ],
+      "Metal processing - Electric": null
+    },
+    "Metal finishing": {
+      "Metal finishing - Thermal": [
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Natural gas (incl. biogas)"
+      ],
+      "Metal finishing - Steam": [
+        "Solids",
+        "Refinery gas",
+        "LPG",
+        "Diesel oil (incl. biofuels)",
+        "Residual fuel oil",
+        "Other liquids",
+        "Natural gas (incl. biogas)",
+        "Derived gases",
+        "Biomass",
+        "Steam distributed"
+      ],
+      "Metal finishing - Electric": null
+    }
+  }
+}
