@@ -4,7 +4,6 @@ import pandas as pd
 import streamlit as st
 from millify import millify
 
-from eur_energy import config
 from eur_energy.model.composer import compose_country
 from eur_energy.model.countries import Country
 from eur_energy.model.processes import VALID_SUBSECTOR_PROCESSES
@@ -17,6 +16,7 @@ from eur_energy.visualisation.figure_factory import (
     generate_sub_sector_summary_plot,
     generate_process_details_graph
 )
+from eur_energy.visualisation.utils import load_credentials
 
 st.set_page_config(
     page_title="Assess",
@@ -25,27 +25,22 @@ st.set_page_config(
 )
 
 
-@st.cache
-def load_datasets():
-    path = config.FORMATTED_DATA_FOLDER
-    activity_df = None
-    demand_df = None
-    emission_df = None
-    for p in path.glob('*.csv'):
-        if 'activity_data' in p.name:
-            activity_df = pd.read_csv(p)
-        elif 'demand_data' in p.name:
-            demand_df = pd.read_csv(p)
-        elif 'emission_data' in p.name:
-            emission_df = pd.read_csv(p)
-        else:
-            raise NotImplementedError(f'{p.name} not implemented!')
+@st.experimental_memo(ttl=24 * 3600)
+def load_datasets(ref_iso2, ref_year):
+    credentials = load_credentials()
+    raw_query = f"""
+        SELECT * FROM `eur-energy.JRC_IDEES.$TABLE`
+        where iso2='{ref_iso2}' and year={ref_year}
+        """
+    activity_df = pd.read_gbq(query=raw_query.replace('$TABLE', 'activity_data'), credentials=credentials)
+    demand_df = pd.read_gbq(query=raw_query.replace('$TABLE', 'demand_data'), credentials=credentials)
+    emission_df = pd.read_gbq(query=raw_query.replace('$TABLE', 'emission_data'), credentials=credentials)
 
     return activity_df, demand_df, emission_df
 
 
 @st.cache(allow_output_mutation=True, ttl=24 * 3600)
-def load_country_data(ref_iso2, ref_year):
+def load_country_data(ref_iso2, ref_year, demand_df, activity_df, emission_df):
     return compose_country(
         iso2=ref_iso2, year=ref_year, demand_df=demand_df, activity_df=activity_df, emission_df=emission_df
     )
@@ -143,9 +138,6 @@ def generate_text(df, country_name, year, sub_sector=None, category='fuel', vari
                 """
 
 
-# load datasets
-activity_df, demand_df, emission_df = load_datasets()
-
 # get dropdown options
 sub_sector_names = sorted(VALID_SUBSECTOR_PROCESSES.keys())
 
@@ -178,7 +170,11 @@ with col3:
 
 # load the selected country
 with st.spinner(text='Loading selected geography information ...'):
-    country = load_country_data(ref_iso2=iso2, ref_year=year)
+    # load datasets
+    activity_df, demand_df, emission_df = load_datasets(ref_iso2=iso2, ref_year=year)
+    country = load_country_data(
+        ref_iso2=iso2, ref_year=year, demand_df=demand_df, activity_df=activity_df, emission_df=emission_df
+    )
 
 if country is not None:
     # derive fuel demand and total emissions
