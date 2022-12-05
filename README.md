@@ -2,7 +2,7 @@
 
 Explore the energy consumption of European industrial processes
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://badrbmb-eur-energy-eur-energyvisualisation-home-4pl7d9.streamlit.app/)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://badrbmb-eur-energy-eur-energyvisualisation-home-elgwnx.streamlit.app/)
 
 ##  Description
 
