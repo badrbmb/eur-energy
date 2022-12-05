@@ -67,6 +67,25 @@ class Country:
         return [t.sub_sector_type.value for t in self.sub_sectors]
 
     @property
+    def grid_carbon_intensity(self):
+        """
+        Get the average grid carbon intensity of all sub-sectors
+        Returns:
+            - float: carbon intensity electricity in kgCO2/GJ
+        """
+        return np.nanmean([sub_sector.grid_carbon_intensity for sub_sector in self.sub_sectors])
+
+    def set_grid_carbon_intensity(self, value):
+        """
+        Set the same grid carbon intensity for all sub-sectors
+        Args:
+            value: carbon intensity of electricity (from grid) in kgCO2/GJ
+        Returns:
+        """
+        for sub_sector in self.sub_sectors:
+            sub_sector.set_grid_carbon_intensity(value)
+
+    @property
     def total_emissions(self) -> float:
         """
         Total emissions across all sub sectors in kgCO2
@@ -204,6 +223,15 @@ class Country:
 
         return _out
 
+    @property
+    def total_fuel_demand(self) -> float:
+        """
+        Total fuel demand across all sub sectors in GJ
+        Returns:
+            - float: fuel demand in GJ
+        """
+        return np.nansum([t['value'] for t in self.get_total_fuel_demand()])
+
 
 @dataclass
 class CountryCollection:
@@ -248,3 +276,60 @@ class CountryCollection:
                 'values': country.emission_intensity_by_sub_sector
             } for country in self.countries
         ]
+
+
+class DeltaCountry:
+    country1: Country
+    country2: Country
+
+    @property
+    def delta_emissions(self) -> float:
+        """
+        Get absolute difference between total emissions of two countries
+        Returns:
+            - float: country2.total_emissions - country1.total_emissions
+        """
+        return self.country2.total_emissions - self.country1.total_emissions
+
+    @property
+    def delta_emissions_by_sub_sector(self) -> dict:
+        """
+        Get the absolute difference between total emissions by sub-sector of each country
+        Returns:
+            -dict: country1 - country2 for sector (expressed in kgCO2)
+        """
+        df1 = pd.DataFrame([self.country1.get_total_emissions()])
+        df2 = pd.DataFrame([self.country1.get_total_emissions()])
+
+        df = pd.merge(df1, df2, on=['sub_sector', 'unit'], suffixes=['_1', '_2'])
+        df['value'] = df['value_2'] - df['value_1']
+        df.drop(columns=['value_2', 'value_1'], inplace=True)
+
+        return df.to_dict('records')
+
+    @property
+    def delta_emission_intensity_by_sub_sector(self) -> dict:
+        """
+        Get the absolute difference between the emission intensities by sub-sector of each country
+        Returns:
+            -dict: country1 - country2 for each EFs by sector (expressed in kgCO2/tonne)
+        """
+        df1 = pd.DataFrame([self.country1.emission_intensity_by_sub_sector])
+        df2 = pd.DataFrame([self.country1.emission_intensity_by_sub_sector])
+        return (df2 - df1).T.to_dict()[0]
+
+    @property
+    def delta_fuel_demand_by_sub_sector(self) -> dict:
+        """
+        Get the absolute difference between the fuel demand by sub-sector of each country
+        Returns:
+            -dict: country1 - country2 for each fuel (expressed in GJ)
+        """
+        df1 = pd.DataFrame([self.country1.get_total_fuel_demand()])
+        df2 = pd.DataFrame([self.country1.get_total_fuel_demand()])
+
+        df = pd.merge(df1, df2, on=['fuel_class', 'fuel', 'unit'], suffixes=['_1', '_2'])
+        df['value'] = df['value_2'] - df['value_1']
+        df.drop(columns=['value_2', 'value_1'], inplace=True)
+
+        return df.to_dict('records')

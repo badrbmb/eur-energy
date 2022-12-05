@@ -35,6 +35,25 @@ class SubSector:
         assert len(set(self.process_names)) == len(self.process_names), \
             AssertionError(f"Duplicated process names found for sub-sector=`{self.sub_sector_type.value}`!")
 
+    def set_grid_carbon_intensity(self, value):
+        """
+        Set the same grid carbon intensity for all processes in the sub-sector
+        Args:
+            value: carbon intensity of electricity (from grid) in kgCO2/GJ
+        Returns:
+        """
+        for process in self.processes:
+            process.grid_carbon_intensity = value
+
+    @property
+    def grid_carbon_intensity(self):
+        """
+        Get the average grid carbon intensity of all processes in sub-sector
+        Returns:
+            - float: carbon intensity electricity in kgCO2/GJ
+        """
+        return np.nanmean([process.grid_carbon_intensity for process in self.processes])
+
     @property
     def process_names(self) -> list:
         """

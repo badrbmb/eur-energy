@@ -94,7 +94,7 @@ class FuelType(Enum):
 @dataclass
 class FuelConsumption:
     fuel: Union[str, FuelType]
-    value: float
+    value: float  # final energy consumption value
     unit: str  # expected in GJ/tonne
     _fuel_emission_intensity: float = None  # useful for setting custom values for Electricity or Steam
 

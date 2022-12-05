@@ -1,18 +1,19 @@
 # EUR-energy
 
-Explore the energy consumption of European industrial processes
-
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://badrbmb-eur-energy-eur-energyvisualisation-home-elgwnx.streamlit.app/)
+
+Explore the energy consumption of European industrial processes.
 
 ##  Description
 
 Streamlit web app. to visualise the data behind the [JRC-IDEES: Integrated Database of the European Energy Sector](https://jeodpp.jrc.ec.europa.eu/ftp/jrc-opendata/JRC-IDEES/JRC-IDEES-2015_v1/2017%20JRC-IDEES%20Integrated%20Database%20of%20the%20European%20Energy%20Sector%20Methodological%20note.pdf).
 
 - Explore the dynamics of energy demand from the European industry
-  - From historical national data on physical outputs, to fuel consumption and emissions intensities, dive into the specifics of major European industrial sectors covering iron & steel, non-metallic mineral products, non-ferrous metals, pulp & paper, and the chemicals industry.
+  - From historical national data on physical outputs, to fuel consumption and emissions intensities, dive into the specifics of major European industrial sectors covering iron & steel, non-metallic mineral products, non-ferrous metals, pulp & paper, and the chemical industry.
   
 
   ![emissions_chemicals_map](eur_energy/data/images/fig1.gif)
+
 _Total emissions from the `Basic chemicals` industry in EU27 + UK, 2000-2015._
 
 - Derive insights from granular data on industrial sectors
@@ -20,7 +21,8 @@ _Total emissions from the `Basic chemicals` industry in EU27 + UK, 2000-2015._
   
 
   ![emission_intensities_by_process](eur_energy/data/images/fig2.png)
-  _Emission intensities borkendown by process from the `Non ferrous metals` industry in EU27 + UK, 2015._
+
+  _Emission intensities broken-down by process from the `Non ferrous metals` industry in EU27 + UK, 2015._
 
 
 - Evaluate alternative scenarios for fuel demand

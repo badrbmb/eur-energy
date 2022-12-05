@@ -6,7 +6,7 @@ from millify import millify
 
 from eur_energy.model.composer import compose_country
 from eur_energy.model.countries import Country
-from eur_energy.model.processes import VALID_SUBSECTOR_PROCESSES
+from eur_energy.model.processes import VALID_SUB_SECTOR_PROCESSES
 from eur_energy.visualisation.figure_factory import (
     COLOR_DICT_ISO2,
     generate_country_fuel_demand,
@@ -139,7 +139,7 @@ def generate_text(df, country_name, year, sub_sector=None, category='fuel', vari
 
 
 # get dropdown options
-sub_sector_names = sorted(VALID_SUBSECTOR_PROCESSES.keys())
+sub_sector_names = sorted(VALID_SUB_SECTOR_PROCESSES.keys())
 
 # define page layout
 st.write('# Assess')
@@ -183,8 +183,7 @@ if country is not None:
     # display metrics
 
     # load data
-    df_fuel_demand = pd.DataFrame(country.get_total_fuel_demand())
-    total_final_demand = df_fuel_demand['value'].sum()
+    total_final_demand = country.total_fuel_demand
     total_emissions = country.total_emissions
 
     _, col2, col3, _ = st.columns([2, 2, 2, 2])
@@ -207,7 +206,8 @@ if country is not None:
 
     with col1:
         st.write('##### ... by fuel')
-        # generate text
+        df_fuel_demand = pd.DataFrame(country.get_total_fuel_demand())
+        # generate text-
         text_card = generate_text(
             df_fuel_demand,
             country_name=country_name,

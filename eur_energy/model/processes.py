@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
-VALID_SUBSECTOR_PROCESSES = {
+VALID_SUB_SECTOR_PROCESSES = {
     'Chemicals Industry': ['Basic chemicals',
                            'Other chemicals',
                            'Pharmaceutical products etc.'],

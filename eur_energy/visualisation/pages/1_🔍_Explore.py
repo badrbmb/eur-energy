@@ -6,7 +6,7 @@ from millify import millify
 
 from eur_energy import config
 from eur_energy.model.countries import Country
-from eur_energy.model.processes import VALID_SUBSECTOR_PROCESSES
+from eur_energy.model.processes import VALID_SUB_SECTOR_PROCESSES
 from eur_energy.visualisation.figure_factory import generate_heatmap, generate_cumulative_chart, COLOR_DICT_ISO2
 from eur_energy.visualisation.utils import generate_multiplier_prefixes, load_credentials
 
@@ -117,7 +117,7 @@ df = load_dataset()
 geoshapes = load_borders()
 
 # get dropdown options
-sub_sector_names = sorted(VALID_SUBSECTOR_PROCESSES.keys())
+sub_sector_names = sorted(VALID_SUB_SECTOR_PROCESSES.keys())
 
 # define page layout
 st.write('# Explore')
@@ -135,7 +135,7 @@ with col1:
 
 # define choice of sectors
 with col2:
-    process = st.selectbox('Process:', options=VALID_SUBSECTOR_PROCESSES[sub_sector], key='process-select')
+    process = st.selectbox('Process:', options=VALID_SUB_SECTOR_PROCESSES[sub_sector], key='process-select')
 
 # divider
 st.markdown("""---""")
