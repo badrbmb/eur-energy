@@ -48,23 +48,23 @@ def load_carbon_content(path: Path = None, convert_to_co2=True) -> dict:
 FUEL_EMISSION_INTENSITIES = load_carbon_content()
 
 # classification of fuel categories
-FUEL_CATEGORIES = {
+FUEL_CLASSES = {
     'Electricity': 'Electricity',
-    'Diesel oil': 'Fossil fuel',
-    'LPG': 'Fossil fuel',
-    'Naphtha': 'Fossil fuel',
-    'Natural gas': 'Fossil fuel',
-    'Other liquids': 'Fossil fuel',
+    'Diesel oil': 'Fossil',
+    'LPG': 'Fossil',
+    'Naphtha': 'Fossil',
+    'Natural gas': 'Fossil',
+    'Other liquids': 'Fossil',
     'Refinery gas': 'Other',
-    'Residual fuel oil': 'Fossil fuel',
-    'Solids': 'Fossil fuel',
-    'Diesel oil (incl. biofuels)': '',
-    'Natural gas (incl. biogas)': '',
-    'Biomass': '',
-    'Derived gases': '',
-    'Steam distributed': '',
-    'Solar and geothermal': '',
-    'Coke': 'Fossil fuel'
+    'Residual fuel oil': 'Fossil',
+    'Solids': 'Fossil',
+    'Diesel oil (incl. biofuels)': 'Mixed',
+    'Natural gas (incl. biogas)': 'Mixed',
+    'Biomass': 'Renewable',
+    'Derived gases': 'Other',
+    'Steam distributed': 'Other',
+    'Solar and geothermal': 'Renewable',
+    'Coke': 'Fossil'
 }
 
 
@@ -87,8 +87,8 @@ class FuelType(Enum):
     coke = 'Coke'
 
     @property
-    def fuel_category(self):
-        return FUEL_CATEGORIES.get(self.value)
+    def fuel_class(self):
+        return FUEL_CLASSES.get(self.value)
 
 
 @dataclass
@@ -254,6 +254,7 @@ class ConsumptionCategory:
         return [
             {
                 'category': self.category_name,
+                'fuel_class': t.fuel.fuel_class,
                 'fuel': t.fuel.value,
                 'value': t.value,
                 'unit': t.unit

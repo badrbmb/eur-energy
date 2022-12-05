@@ -196,7 +196,12 @@ def generate_country_fuel_demand(df_fuel_demand, exclude_null=True):
     df_plot = df_fuel_demand.copy()
     if exclude_null:
         df_plot = df_plot[df_fuel_demand['value'] > 0]
-    fig = px.pie(df_plot, names='fuel', values='value', hover_data=['unit'])
+    # reformat share
+    df_plot['share'] = df_plot['share'].apply(lambda x: f"{round(x * 100, 2)}%")
+    fig = px.sunburst(
+        df_plot, path=['fuel_class', 'fuel'], values='value', hover_data=['unit', 'share'],
+    )
+    fig.update_traces(insidetextorientation='radial')
     fig.update_layout(
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
     )
@@ -208,6 +213,7 @@ def generate_country_demand_by_sub_sector(df_fuel_demand_sub_sector):
                  color='sub_sector', color_discrete_map=COLOR_DICT_SUB_SECTORS)
     fig.update_layout(
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        legend=dict(orientation='h')
     )
     return fig
 

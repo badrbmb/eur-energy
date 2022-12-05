@@ -185,7 +185,7 @@ class Country:
         _out = [u for v in _out for u in v]
 
         # aggregate by fuel across processes/sub-sectors
-        _out = pd.DataFrame(_out).groupby(['fuel', 'unit']).agg({'value': 'sum'}).reset_index()
+        _out = pd.DataFrame(_out).groupby(['fuel_class', 'fuel', 'unit']).agg({'value': 'sum'}).reset_index()
 
         return _out.to_dict('records')
 
