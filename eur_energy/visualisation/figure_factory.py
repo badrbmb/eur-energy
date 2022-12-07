@@ -148,6 +148,13 @@ def generate_cumulative_chart(df_data, reference_year, variable_to_show, colors_
         xaxis=dict(title=f"Cumulative {col_x.lower()}"),
         yaxis=dict(title=col_y.replace(' intensity', '')),
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        plot_bgcolor='rgba(0,0,0,0)'
+    )
+    fig.update_xaxes(showline=True, linewidth=2, linecolor='#d6d6d6', title='Process')
+    fig.update_yaxes(
+        showgrid=False, zeroline=False,
+        showline=True, linewidth=2, linecolor='#d6d6d6',
+        # showticklabels=False,
     )
 
     if add_annotations:
@@ -226,7 +233,14 @@ def generate_emission_intensities_by_sub_sector(df_efs):
     fig.update_layout(
         yaxis=dict(title='Total emission intensity (kgCO2/tonne)'),
         xaxis=dict(title=''),
-        showlegend=False
+        showlegend=False,
+        plot_bgcolor='rgba(0,0,0,0)'
+    )
+    fig.update_xaxes(showline=True, linewidth=2, linecolor='#d6d6d6', title='Process')
+    fig.update_yaxes(
+        showgrid=False, zeroline=False,
+        showline=True, linewidth=2, linecolor='#d6d6d6',
+        showticklabels=False,
     )
     return fig
 
@@ -249,6 +263,7 @@ def generate_country_emissions_by_sub_sector(df_emissions):
     )
     fig.update_layout(
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        plot_bgcolor='rgba(0,0,0,0)'
     )
     return fig
 
@@ -313,21 +328,26 @@ def generate_process_details_graph(data, variable, rounding, unit):
         yaxis=dict(title=f"{variable} ({unit}"),
         height=550,
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        plot_bgcolor='rgba(0,0,0,0)'
+    )
+    fig.update_xaxes(showline=True, linewidth=2, linecolor='#d6d6d6', title='Process')
+    fig.update_yaxes(
+        showgrid=False, zeroline=False,
+        showline=True, linewidth=2, linecolor='#d6d6d6',
+        showticklabels=False,
     )
 
     return fig
 
 
-def generate_dumbbell_scenario_chart(df_plot, variable, stored_values):
+def generate_dumbbell_scenario_chart(df_plot, variable, stored_values, log_scale):
     # define unit and log scale
     if variable == 'Total emissions':
         unit = 'mtCO2'
         multiplier = 1e9
-        # x_scale = 'linear'
     elif variable == 'Emission intensity':
         unit = 'kgCO2/tonne'
         multiplier = 1
-        # x_scale = 'linear'
     else:
         raise NotImplementedError(f"{variable} not handled!")
 
@@ -378,12 +398,15 @@ def generate_dumbbell_scenario_chart(df_plot, variable, stored_values):
 
     fig.update_layout(
         xaxis=dict(
-            # type=x_scale,
             title=f"{variable} ({unit})"
         ),
         height=450,
         margin={"r": 0, "t": 0, "l": 0, "b": 0},
-        legend=dict(orientation='h')
+        legend=dict(orientation='h'),
+        plot_bgcolor='rgba(0,0,0,0)'
     )
+
+    if log_scale:
+        fig.update_layout(xaxis=dict(type='log'))
 
     return fig

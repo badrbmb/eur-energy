@@ -195,9 +195,9 @@ if scenario == 'Low carbon electricity':
             step=_step,
             key='carbon-intensities-select-reference',
             on_change=set_base_value,
-            help="This value set to a default value "
-                 "automatically populated using best available data for **grid carbon intensity** in the given geography-year,"
-                 " but can be adjust to reflect your own assumptions."
+            help="This value is set to a default value "
+                 "automatically populated using best available data for **grid carbon intensity** in the given geography-year -"
+                 " it can be adjust to reflect your own assumptions."
         )
 
         new_value = st.slider(
@@ -245,15 +245,28 @@ if scenario == 'Low carbon electricity':
 
     st.write('##')
     # add industry details
-    col1, col2 = st.columns([1, 3])
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col1:
         sub_sector = st.selectbox('Filter sub-sector:', options=['All industries'] + country.sub_sector_names)
 
     with col2:
         variable = st.selectbox('Choose a variable to display:', options=['Total emissions', 'Emission intensity'])
+
+    with col3:
+        st.write('#')
+        log_scale = st.checkbox('Display in log scale', value=False)
+
+    col1, col2 = st.columns([1, 3])
+
+    with col1:
+        st.warning('TODO')
+
+    with col2:
         # plot dumbbell charts by process
         df_summary = get_delta_summary(delta_country, variable=variable, sub_sector=sub_sector)
-        fig = generate_dumbbell_scenario_chart(df_summary, variable=variable, stored_values=stored_values)
+        fig = generate_dumbbell_scenario_chart(
+            df_summary, variable=variable, stored_values=stored_values, log_scale=log_scale
+        )
         st.plotly_chart(fig, use_container_width=True)
 
 elif scenario == 'Fuel-switching':
