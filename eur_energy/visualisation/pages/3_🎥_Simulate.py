@@ -61,6 +61,9 @@ def get_delta_summary(delta_country, variable, sub_sector):
     df2.rename(columns={ref_col: 'scenario'}, inplace=True)
     df_plot = pd.concat([df1, df2], axis=1)
 
+    # drop nan values
+    df_plot.dropna(subset=['reference'], inplace=True)
+
     df_plot.reset_index(inplace=True)
     df_plot.rename(columns={'level_0': 'sub_sector', 'level_1': 'process'}, inplace=True)
     df_plot['change'] = round((df_plot['scenario'] - df_plot['reference']) * 100 / df_plot['reference'], 2)
@@ -101,6 +104,26 @@ def convert_base_value():
             raise NotImplementedError(f"{st.session_state['unit-select']} not handled!")
         # set value
         st.session_state['base_value_reference'] *= factor
+
+
+def generate_text(df_summary, emission_change, country, variable, top=3):
+    # get top changes
+    df_text = df_summary.sort_values('change').head(top)
+    text_details = [f"**'{row['process']}'** ({row['change']}%)" for _, row in df_text.iterrows()]
+    if len(text_details) > 1:
+        text_details = ', '.join(text_details[:-1]) + ' and ' + text_details[-1]
+    else:
+        text_details = text_details[0]
+
+    if abs(emission_change) < 1:
+        # no notable emissions
+        return st.warning('No major emission reductions reached under the current scenario 😐')
+    else:
+        return st.success(f"""
+        Total industrial emissions for **{country}** are reduced by **{emission_change}%** under the current scenario 🙌
+          
+        The processes with the highest emission reductions by **{variable.lower()}** are {text_details}
+        """)
 
 
 st.set_page_config(
@@ -231,7 +254,7 @@ if scenario == 'Low carbon electricity':
         delta_country.set_grid_carbon_intensity(new_value)
 
         # display metric change
-        _change = round(delta_country.delta_emissions_change * 100, 1)
+        emission_change = round(delta_country.delta_emissions_change * 100, 1)
         reference_total_emissions_card = st.metric(
             label='Reference total emissions:',
             value=millify(delta_country.ref_total_emissions, prefixes=[' tCO2', ' ktCO2', ' mtCO2']),
@@ -239,7 +262,7 @@ if scenario == 'Low carbon electricity':
         scenario_total_emissions_card = st.metric(
             label='Scenario total emissions:',
             value=millify(delta_country.total_emissions, prefixes=[' tCO2', ' ktCO2', ' mtCO2']),
-            delta=f"{_change}%",
+            delta=f"{emission_change}%",
             delta_color='normal'
         )
 
@@ -254,12 +277,9 @@ if scenario == 'Low carbon electricity':
 
     with col3:
         st.write('#')
-        log_scale = st.checkbox('Display in log scale', value=False)
+        log_scale = st.checkbox('Display in log scale', value=True)
 
     col1, col2 = st.columns([1, 3])
-
-    with col1:
-        st.warning('TODO')
 
     with col2:
         # plot dumbbell charts by process
@@ -268,6 +288,11 @@ if scenario == 'Low carbon electricity':
             df_summary, variable=variable, stored_values=stored_values, log_scale=log_scale
         )
         st.plotly_chart(fig, use_container_width=True)
+
+    with col1:
+        # populate text
+        st.write('#')
+        card_text = generate_text(df_summary, emission_change, country.country_name, variable)
 
 elif scenario == 'Fuel-switching':
 
