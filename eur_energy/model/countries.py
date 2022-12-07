@@ -232,6 +232,34 @@ class Country:
         """
         return np.nansum([t['value'] for t in self.get_total_fuel_demand()])
 
+    def get_summary(self, add_fuels: bool = True, rounding: int = 2, return_df=False) -> Union[dict, pd.DataFrame]:
+        """
+        Summary of country sub-sectors with details for each process
+        Args:
+            add_fuels (bool): decide to add the fuel details in teh summary
+            rounding (int): rounding decimal precision
+            return_df (bool): decide to return result as pd.DataFrame
+
+        Returns:
+            - Union[dict, pd.DataFrame]: Summary
+        """
+
+        _out = {
+            sub_sector.sub_sector_type.value: sub_sector.get_summary(rounding=rounding, add_fuels=add_fuels)
+            for sub_sector in self.sub_sectors
+        }
+        if return_df:
+            # correctly formatted only when add_fuels=False !
+            # TODO handle case where add_fuels=True
+            _out = pd.DataFrame.from_dict(
+                {
+                    (i, j): _out[i][j]
+                    for i in _out.keys()
+                    for j in _out[i].keys()
+                }, orient='index'
+            )
+        return _out
+
 
 @dataclass
 class CountryCollection:
@@ -278,9 +306,36 @@ class CountryCollection:
         ]
 
 
+@dataclass
 class DeltaCountry:
-    country1: Country
-    country2: Country
+    country: Country
+    rounding: int = 2
+
+    def __post_init__(self):
+        # store reference country information
+        self.ref_total_emissions = self.country.total_emissions
+        self.ref_get_total_emissions = self.country.get_total_emissions()
+        self.ref_emission_intensity_by_sub_sector = self.country.emission_intensity_by_sub_sector
+        self.ref_get_total_fuel_demand = self.country.get_total_fuel_demand()
+        self.ref_get_summary = self.country.get_summary(add_fuels=False, rounding=self.rounding, return_df=True)
+
+    def set_grid_carbon_intensity(self, value):
+        """
+        Set the same grid carbon intensity for the country
+        Args:
+            value: carbon intensity of electricity (from grid) in kgCO2/GJ
+        Returns:
+        """
+        self.country.set_grid_carbon_intensity(value)
+
+    @property
+    def total_emissions(self) -> float:
+        """
+        Total emissions for the country
+        Returns:
+            - float: absolute emissions in kgCO2
+        """
+        return self.country.total_emissions
 
     @property
     def delta_emissions(self) -> float:
@@ -289,7 +344,16 @@ class DeltaCountry:
         Returns:
             - float: country2.total_emissions - country1.total_emissions
         """
-        return self.country2.total_emissions - self.country1.total_emissions
+        return self.total_emissions - self.ref_total_emissions
+
+    @property
+    def delta_emissions_change(self) -> float:
+        """
+        Get relative difference between total emissions of two countries
+        Returns:
+            - float: (country2.total_emissions - country1.total_emissions)/country1.total_emissions
+        """
+        return self.delta_emissions / self.ref_total_emissions
 
     @property
     def delta_emissions_by_sub_sector(self) -> dict:
@@ -298,8 +362,8 @@ class DeltaCountry:
         Returns:
             -dict: country1 - country2 for sector (expressed in kgCO2)
         """
-        df1 = pd.DataFrame([self.country1.get_total_emissions()])
-        df2 = pd.DataFrame([self.country1.get_total_emissions()])
+        df1 = pd.DataFrame(self.ref_get_total_emissions)
+        df2 = pd.DataFrame(self.country.get_total_emissions())
 
         df = pd.merge(df1, df2, on=['sub_sector', 'unit'], suffixes=['_1', '_2'])
         df['value'] = df['value_2'] - df['value_1']
@@ -314,8 +378,8 @@ class DeltaCountry:
         Returns:
             -dict: country1 - country2 for each EFs by sector (expressed in kgCO2/tonne)
         """
-        df1 = pd.DataFrame([self.country1.emission_intensity_by_sub_sector])
-        df2 = pd.DataFrame([self.country1.emission_intensity_by_sub_sector])
+        df1 = pd.DataFrame([self.ref_emission_intensity_by_sub_sector])
+        df2 = pd.DataFrame([self.country.emission_intensity_by_sub_sector])
         return (df2 - df1).T.to_dict()[0]
 
     @property
@@ -325,11 +389,32 @@ class DeltaCountry:
         Returns:
             -dict: country1 - country2 for each fuel (expressed in GJ)
         """
-        df1 = pd.DataFrame([self.country1.get_total_fuel_demand()])
-        df2 = pd.DataFrame([self.country1.get_total_fuel_demand()])
+        df1 = pd.DataFrame(self.ref_get_total_fuel_demand)
+        df2 = pd.DataFrame(self.country.get_total_fuel_demand())
 
         df = pd.merge(df1, df2, on=['fuel_class', 'fuel', 'unit'], suffixes=['_1', '_2'])
         df['value'] = df['value_2'] - df['value_1']
         df.drop(columns=['value_2', 'value_1'], inplace=True)
 
         return df.to_dict('records')
+
+    def get_summary(self, rounding=2, return_df=True) -> Union[dict, pd.DataFrame]:
+        """
+        Summary of difference between the two countries' sub-sectors with details for each process
+        Args:
+            rounding (int): rounding decimal precision
+            return_df (bool): decide to return a dict or a pd.DataFrame
+
+        Returns:
+            - Union[dict, pd.DataFrame] : Summary
+        """
+
+        summary1 = self.ref_get_summary
+        summary2 = self.country.get_summary(add_fuels=False, rounding=rounding, return_df=True)
+
+        delta_summary = summary2 - summary1
+
+        if not return_df:
+            delta_summary = delta_summary.to_dict(orient='index')
+
+        return delta_summary

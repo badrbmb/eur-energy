@@ -25,6 +25,7 @@ setup(
         "pycountry==22.3.5",
         "millify==0.1.1",
         "requests==2.27.1",
+        "streamlit==1.15.1",
         "streamlit-lottie==0.0.3",
         "tqdm==4.64.1"
     ],

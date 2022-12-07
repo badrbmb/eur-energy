@@ -4,7 +4,6 @@ import pandas as pd
 import streamlit as st
 from millify import millify
 
-from eur_energy.model.composer import compose_country
 from eur_energy.model.countries import Country
 from eur_energy.model.processes import VALID_SUB_SECTOR_PROCESSES
 from eur_energy.visualisation.figure_factory import (
@@ -16,34 +15,13 @@ from eur_energy.visualisation.figure_factory import (
     generate_sub_sector_summary_plot,
     generate_process_details_graph
 )
-from eur_energy.visualisation.utils import load_credentials
+from eur_energy.visualisation.utils import load_datasets, load_country_data
 
 st.set_page_config(
     page_title="Assess",
     page_icon="🎯",
     layout="wide"
 )
-
-
-@st.experimental_memo(ttl=24 * 3600)
-def load_datasets(ref_iso2, ref_year):
-    credentials = load_credentials()
-    raw_query = f"""
-        SELECT * FROM `eur-energy.JRC_IDEES.$TABLE`
-        where iso2='{ref_iso2}' and year={ref_year}
-        """
-    activity_df = pd.read_gbq(query=raw_query.replace('$TABLE', 'activity_data'), credentials=credentials)
-    demand_df = pd.read_gbq(query=raw_query.replace('$TABLE', 'demand_data'), credentials=credentials)
-    emission_df = pd.read_gbq(query=raw_query.replace('$TABLE', 'emission_data'), credentials=credentials)
-
-    return activity_df, demand_df, emission_df
-
-
-@st.cache(allow_output_mutation=True, ttl=24 * 3600)
-def load_country_data(ref_iso2, ref_year, demand_df, activity_df, emission_df):
-    return compose_country(
-        iso2=ref_iso2, year=ref_year, demand_df=demand_df, activity_df=activity_df, emission_df=emission_df
-    )
 
 
 @st.cache(allow_output_mutation=True, ttl=24 * 3600)
