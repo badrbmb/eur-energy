@@ -302,3 +302,22 @@ elif scenario == 'Fuel-switching':
     with col2:
         lottie_json = load_lottie_url(LOTTIE_URL)
         st_lottie(lottie_json, speed=40)
+
+with st.sidebar:
+    # populate current selection
+    st.write('Current selection:')
+    st.text_input(label='Scenario:', value=scenario, disabled=True)
+
+    if scenario == 'Low carbon electricity':
+        st.text_input(label='Reference year:', value=year, disabled=True)
+        st.text_input(label='Geography:', value=country.country_name, disabled=True)
+        st.text_input(
+            label='Reference electricity carbon intensity:',
+            value=f"{stored_values['reference']}{stored_values['unit']}",
+            disabled=True
+        )
+        st.text_input(
+            label='Scenario electricity carbon intensity:',
+            value=f"{stored_values['scenario']}{stored_values['unit']}",
+            disabled=True
+        )
