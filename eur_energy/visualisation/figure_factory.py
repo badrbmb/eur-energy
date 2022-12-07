@@ -316,3 +316,74 @@ def generate_process_details_graph(data, variable, rounding, unit):
     )
 
     return fig
+
+
+def generate_dumbbell_scenario_chart(df_plot, variable, stored_values):
+    # define unit and log scale
+    if variable == 'Total emissions':
+        unit = 'mtCO2'
+        multiplier = 1e9
+        # x_scale = 'linear'
+    elif variable == 'Emission intensity':
+        unit = 'kgCO2/tonne'
+        multiplier = 1
+        # x_scale = 'linear'
+    else:
+        raise NotImplementedError(f"{variable} not handled!")
+
+    # convert units
+    for col in ['reference', 'scenario']:
+        df_plot[col] *= 1 / multiplier
+
+    # format the stored values for each series
+    reference_value = f"{stored_values['reference']}{stored_values['unit']}"
+    scenario_value = f"{stored_values['scenario']}{stored_values['unit']}"
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatter(
+            y=[df_plot['sub_sector'], df_plot['process']],
+            x=df_plot['reference'],
+            mode='markers',
+            name=f'Reference<br>({reference_value})',
+            hovertemplate="Sub-sector: <b>%{y[0]}</b><br>Process: <b>%{y[1]}</b><br><extra>Reference $VAR<br>%{x:.2f}$UNIT</extra>".replace(
+                '$VAR', variable).replace('$UNIT', unit),
+            marker=dict(color='#dc3444')
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            y=[df_plot['sub_sector'], df_plot['process']],
+            x=df_plot['scenario'],
+            mode='markers',
+            name=f'Scenario<br>({scenario_value})',
+            hovertext=df_plot['change'],
+            hovertemplate="Sub-sector: <b>%{y[0]}</b><br>Process: <b>%{y[1]}</b><br><extra>Scenario $VAR<br>%{x:.2f}$UNIT<br>%{hovertext}% compared to ref.</extra>".replace(
+                '$VAR', variable).replace('$UNIT', unit),
+            marker=dict(color='#29bfb1')
+        )
+    )
+
+    for idx, row in df_plot.iterrows():
+        fig.add_shape(
+            type='line',
+            layer="below",
+            x0=row['reference'], y0=(row['sub_sector'], row['process']),
+            x1=row['scenario'], y1=(row['sub_sector'], row['process']),
+            line_color="#cccccc",
+        )
+
+    fig.update_traces(marker=dict(size=10))
+
+    fig.update_layout(
+        xaxis=dict(
+            # type=x_scale,
+            title=f"{variable} ({unit})"
+        ),
+        height=450,
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        legend=dict(orientation='h')
+    )
+
+    return fig

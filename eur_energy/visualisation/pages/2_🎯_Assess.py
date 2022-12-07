@@ -296,7 +296,7 @@ if country is not None:
 
     with col1:
         st.write('##')
-        variable = st.selectbox(label='Variable', options=['Energy consumption intensity', 'Emission intensity'],
+        variable = st.selectbox(label='Variable:', options=['Energy consumption intensity', 'Emission intensity'],
                                 key='variable-process-select-assess')
 
         # get process information
