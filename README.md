@@ -1,6 +1,6 @@
 # EUR-energy
 
-[![Open in Streamlit](https://eur-energy-industry.streamlit.app/)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://eur-energy-industry.streamlit.app/)
 
 Explore the energy consumption of European industrial processes.
 
