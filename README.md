@@ -27,9 +27,10 @@ _Total emissions from the `Basic chemicals` industry in EU27 + UK, 2000-2015._
 
 - Evaluate alternative scenarios for fuel demand
   - Simulate alternative fuel demand options for major industrial sectors and analyse the associated impacts on emissions.
-```
-Coming soon!
-```
+  
+  ![emission_intensities_by_process](eur_energy/data/images/fig3.png)
+
+  _Impact of green electricity on total emissions of each industrial process in EU27 + UK (base year = 2015)._
 
 ## Attributions
 
